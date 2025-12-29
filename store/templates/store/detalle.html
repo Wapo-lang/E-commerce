@@ -1,0 +1,28 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div class="row mt-5">
+    <div class="col-md-6">
+        {% if producto.imagen %}
+            <img src="{{ producto.imagen.url }}" class="img-fluid rounded shadow" alt="{{ producto.nombre }}">
+        {% else %}
+            <img src="https://via.placeholder.com/500" class="img-fluid rounded shadow" alt="Sin imagen">
+        {% endif %}
+    </div>
+    <div class="col-md-6">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'lista_productos' %}">Inicio</a></li>
+                <li class="breadcrumb-item active">{{ producto.categoria.nombre }}</li>
+            </ol>
+        </nav>
+        <h1 class="display-4">{{ producto.nombre }}</h1>
+        <h2 class="text-primary mb-4">${{ producto.precio }}</h2>
+        <hr>
+        <p class="lead">{{ producto.descripcion }}</p>
+        <p class="text-muted">Stock disponible: {{ producto.stock }} unidades</p>
+        
+        <button class="btn btn-success btn-lg w-100 mt-4">Añadir al Carrito</button>
+    </div>
+</div>
+{% endblock %}
