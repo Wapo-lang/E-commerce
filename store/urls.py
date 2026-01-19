@@ -6,9 +6,13 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('', lista_productos, name='lista_productos'),
     path('producto/<int:id>/', detalle_producto, name='detalle_producto'),
-    path('agregar/<int:id>/', agregar_producto, name='agregar'), # Nueva ruta
+    path('agregar/<int:id>/', agregar_producto, name='agregar'),
 
-    #Gestion de Usuarios
+    path('carrito/', ver_carrito, name='ver_carrito'),
+    path('eliminar/<int:id>/', eliminar_producto, name="eliminar"),
+    path('restar/<int:id>/', restar_producto, name="restar"),
+    path('limpiar/', limpiar_carrito, name='limpiar_carrito'),
+
     path('login/', auth_views.LoginView.as_view(), name = 'login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name = 'logout'),
 

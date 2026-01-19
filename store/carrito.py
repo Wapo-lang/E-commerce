@@ -8,21 +8,37 @@ class Carrito:
         self.carrito = carrito
 
     def agregar(self, producto):
-        id = str(producto.id)
-        if id not in self.carrito.keys():
-            self.carrito[id] = {
-                "producto_id": producto.id,
-                "nombre": producto.nombre,
-                "precio": str(producto.precio),
-                "cantidad": 1,
-                "total": str(producto.precio),
-                "imagen": producto.imagen.url if producto.imagen else ""
-            }
-        else:
-            self.carrito[id]["cantidad"] += 1
-            self.carrito[id]["total"] = str(float(self.carrito[id]["precio"]) * self.carrito[id]["cantidad"])
-        self.guardar_carrito()
+            id = str(producto.id)
+            if id not in self.carrito.keys():
+                self.carrito[id] = {
+                    "producto_id": producto.id,
+                    "nombre": producto.nombre,
+                    "precio": str(producto.precio),
+                    "cantidad": 1,
+                    "total": str(producto.precio),
+                    "imagen": producto.imagen if producto.imagen else "",
+                }
+            else:
+                self.carrito[id]["cantidad"] += 1
+                self.carrito[id]["total"] = str(float(self.carrito[id]["precio"]) * self.carrito[id]["cantidad"])
+            self.guardar_carrito()
 
     def guardar_carrito(self):
         self.session["carrito"] = self.carrito
         self.session.modified = True
+
+        # Añade esto dentro de tu clase Carrito en carrito.py
+    def eliminar(self, producto):
+        id = str(producto.id)
+        if id in self.carrito:
+            del self.carrito[id]
+            self.guardar_carrito()
+
+    def restar(self, producto):
+        id = str(producto.id)
+        if id in self.carrito:
+            self.carrito[id]["cantidad"] -= 1
+            self.carrito[id]["total"] = str(float(self.carrito[id]["precio"]) * self.carrito[id]["cantidad"])
+            if self.carrito[id]["cantidad"] <= 0:
+                self.eliminar(producto)
+            self.guardar_carrito()

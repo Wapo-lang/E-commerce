@@ -1,27 +1,30 @@
 from django.contrib import admin
-from .models import Categoria, Producto
-from django.utils.safestring import mark_safe # Para mostrar la imagen en el admin
-
-@admin.register(Categoria)
-class CategoriaAdmin(admin.ModelAdmin):
-    list_display = ['nombre']
-    search_fields = ['nombre']
+from django.utils.safestring import mark_safe
+from .models import Producto, Categoria
 
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
-    # Columnas que verás en la lista de productos
-    list_display = ['mostrar_imagen', 'nombre', 'categoria', 'precio', 'stock', 'disponible', 'creado']
-    # Filtros laterales
-    list_filter = ['disponible', 'creado', 'categoria']
-    # Campos que se pueden editar sin entrar al detalle
-    list_editable = ['precio', 'stock', 'disponible']
-    # Buscador
+    # 1. Quitamos 'disponible' de list_display
+    list_display = ['mostrar_imagen', 'nombre', 'categoria', 'precio', 'stock', 'creado']
+    
+    # 2. Quitamos 'disponible' de list_filter
+    list_filter = ['creado', 'categoria']
+    
+    # 3. Quitamos 'disponible' de list_editable
+    list_editable = ['precio', 'stock']
+    
     search_fields = ['nombre', 'descripcion']
 
-    # Función para mostrar una miniatura de la imagen en la lista
+    # Función corregida para mostrar miniaturas con la nueva URL de texto
     def mostrar_imagen(self, obj):
         if obj.imagen:
-            return mark_safe(f'<img src="{obj.imagen.url}" width="50" height="50" style="object-fit: cover;" />')
+            # Quitamos .url porque ahora obj.imagen es directamente el link
+            return mark_safe(f'<img src="{obj.imagen}" width="50" height="50" style="object-fit: cover; border-radius: 5px;" />')
         return "Sin imagen"
     
     mostrar_imagen.short_description = 'Imagen'
+
+# No olvides registrar también la categoría si no lo has hecho
+@admin.register(Categoria)
+class CategoriaAdmin(admin.ModelAdmin):
+    list_display = ['nombre']

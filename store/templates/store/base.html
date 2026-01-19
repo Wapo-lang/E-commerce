@@ -4,42 +4,142 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>I-BEY | Tienda Online</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --accent-color: #ffc107;
+            --dark-bg: #1a1d20;
+        }
+
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: #f4f7f6;
+            color: #333;
+        }
+
+        /* Navbar con Gradiente y Cristal */
+        .navbar {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #343a40 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid var(--accent-color);
+            padding: 0.8rem 0;
+        }
+
+        .navbar-brand {
+            font-size: 1.6rem;
+            letter-spacing: 2px;
+            color: var(--accent-color) !important;
+            transition: transform 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+
+        /* Buscador estilizado */
+        .search-input {
+            border-radius: 25px 0 0 25px;
+            border: none;
+            padding-left: 1.5rem;
+        }
+
+        .search-btn {
+            border-radius: 0 25px 25px 0;
+            padding-right: 1.5rem;
+        }
+
+        /* Botones y Links */
+        .nav-link {
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-color) !important;
+        }
+
+        .btn-register {
+            background-color: var(--accent-color);
+            color: #000;
+            font-weight: 600;
+            border-radius: 20px;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-register:hover {
+            background-color: #e5ac00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+        }
+
+        /* Animación para el contenido */
+        .content-wrapper {
+            animation: fadeIn 1s ease-in;
+        }
+
+        /* Estilos para las tarjetas de productos (se aplicarán en lista.html) */
+        .card {
+            border: none;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top shadow-lg">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{% url 'lista_productos' %}">I-BEY</a>
+            <a class="navbar-brand fw-bold animate__animated animate__fadeInLeft" href="{% url 'lista_productos' %}">
+                <i class="bi bi-lightning-fill"></i> I-BEY
+            </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarContent">
-                <form class="d-flex mx-auto col-lg-5" action="{% url 'lista_productos' %}" method="get">
-                    <input class="form-control me-2" type="search" name="buscar" placeholder="¿Qué estás buscando?" aria-label="Search">
-                    <button class="btn btn-outline-light" type="submit">Buscar</button>
+                <form class="d-flex mx-auto col-lg-5 my-2 my-lg-0 animate__animated animate__fadeInDown" action="{% url 'lista_productos' %}" method="get">
+                    <input class="form-control search-input" type="search" name="buscar" placeholder="Busca tu próximo tesoro..." aria-label="Search">
+                    <button class="btn btn-warning search-btn" type="submit"><i class="bi bi-search"></i></button>
                 </form>
 
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item me-3">
-                        <span class="nav-link active">
-                            🛒 Items: {{ request.session.carrito|length|default:0 }}
-                        </span>
+                <ul class="navbar-nav ms-auto align-items-center animate__animated animate__fadeInRight">
+                    <li class="nav-item me-lg-3">
+                        <a class="nav-link active" href="{% url 'ver_carrito' %}"> <i class="bi bi-cart3 position-relative">
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                                    {{ request.session.carrito|length|default:0 }}
+                                </span>
+                            </i> 
+                            <span class="ms-1">Carrito</span>
+                        </a>
                     </li>
 
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
-                                Hola, {{ user.username }}
+                            <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                                <div class="bg-primary rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                    {{ user.username|first|upper }}
+                                </div>
+                                {{ user.username }}
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="{% url 'password_change' %}">Cambiar Contraseña</a></li>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
+                                <li><a class="dropdown-item" href="{% url 'password_change' %}"><i class="bi bi-shield-lock me-2"></i>Seguridad</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                                    <form action="{% url 'logout' %}" method="post" class="px-2">
                                         {% csrf_token %}
-                                        <button type="submit" class="dropdown-item text-danger">Cerrar Sesión</button>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger w-100">Cerrar Sesión</button>
                                     </form>
                                 </li>
                             </ul>
@@ -49,7 +149,7 @@
                             <a class="nav-link" href="{% url 'login' %}">Ingresar</a>
                         </li>
                         <li class="nav-item">
-                            <a class="btn btn-sm btn-primary ms-2" href="{% url 'registro' %}">Registrarse</a>
+                            <a class="btn btn-sm btn-register ms-lg-3 px-4" href="{% url 'registro' %}">Registrarse</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -57,10 +157,16 @@
         </div>
     </nav>
 
-    <div class="container">
+    <div class="container py-4 content-wrapper">
         {% block content %}
         {% endblock %}
     </div>
+
+    <footer class="bg-dark text-white-50 py-4 mt-5">
+        <div class="container text-center">
+            <small>&copy; 2025 I-BEY E-commerce. Todos los derechos reservados.</small>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

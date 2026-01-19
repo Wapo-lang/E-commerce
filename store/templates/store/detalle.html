@@ -1,28 +1,83 @@
 {% extends 'store/base.html' %}
 
 {% block content %}
-<div class="row mt-5">
-    <div class="col-md-6">
-        {% if producto.imagen %}
-            <img src="{{ producto.imagen.url }}" class="img-fluid rounded shadow" alt="{{ producto.nombre }}">
-        {% else %}
-            <img src="https://via.placeholder.com/500" class="img-fluid rounded shadow" alt="Sin imagen">
-        {% endif %}
-    </div>
-    <div class="col-md-6">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{% url 'lista_productos' %}">Inicio</a></li>
-                <li class="breadcrumb-item active">{{ producto.categoria.nombre }}</li>
-            </ol>
-        </nav>
-        <h1 class="display-4">{{ producto.nombre }}</h1>
-        <h2 class="text-primary mb-4">${{ producto.precio }}</h2>
-        <hr>
-        <p class="lead">{{ producto.descripcion }}</p>
-        <p class="text-muted">Stock disponible: {{ producto.stock }} unidades</p>
-        
-        <button class="btn btn-success btn-lg w-100 mt-4">Añadir al Carrito</button>
+<div class="container mt-5 animate__animated animate__fadeInUp">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'lista_productos' %}" class="text-decoration-none text-muted"> <i class="bi bi-arrow-left"></i> Volver a la tienda</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ producto.nombre }}</li>
+        </ol>
+    </nav>
+
+    <div class="row bg-white rounded-4 shadow-lg overflow-hidden border-0">
+        <div class="col-md-6 p-0 bg-light d-flex align-items-center justify-content-center">
+            <div class="col-md-6 p-0 bg-light d-flex align-items-center justify-content-center">
+                {% if producto.imagen %}
+                    <img src="{{ producto.imagen }}" class="img-fluid img-zoom" alt="{{ producto.nombre }}" style="max-height: 500px; width: 100%; object-fit: cover;">
+                {% else %}
+                    <img src="https://via.placeholder.com/500" class="img-fluid" alt="Sin imagen">
+                {% endif %}
+            </div>
+
+        <div class="col-md-6 p-5 d-flex flex-column justify-content-center">
+            <div class="mb-2">
+                <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">
+                    {{ producto.categoria.nombre }}
+                </span>
+            </div>
+            
+            <h1 class="display-5 fw-bold mb-3">{{ producto.nombre }}</h1>
+            
+            <div class="d-flex align-items-center mb-4">
+                <h2 class="text-success fw-bold mb-0 me-3">${{ producto.precio }}</h2>
+                {% if producto.stock > 0 %}
+                    <span class="text-success small"><i class="bi bi-check-circle-fill"></i> En Stock ({{ producto.stock }} unidades)</span>
+                {% else %}
+                    <span class="text-danger small"><i class="bi bi-x-circle-fill"></i> Agotado</span>
+                {% endif %}
+            </div>
+
+            <p class="text-muted lead mb-5">
+                {{ producto.descripcion }}
+            </p>
+
+            <div class="mt-auto">
+                <form action="{% url 'agregar' producto.id %}" method="post" class="row g-3">
+                    {% csrf_token %}
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-warning btn-lg w-100 fw-bold py-3 shadow-sm btn-hover-effect {% if producto.stock == 0 %}disabled{% endif %}">
+                            <i class="bi bi-cart-plus-fill me-2"></i> Añadir al Carrito
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="mt-4 p-3 rounded-3 bg-light border-start border-warning border-4">
+                    <small class="text-dark d-block"><i class="bi bi-truck me-2"></i> Envío gratuito en compras mayores a $50</small>
+                    <small class="text-dark d-block"><i class="bi bi-shield-check me-2"></i> Pago seguro garantizado por I-BEY</small>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<style>
+    .img-zoom {
+        transition: transform 0.5s ease;
+    }
+    .img-zoom:hover {
+        transform: scale(1.05);
+    }
+    .btn-hover-effect {
+        transition: all 0.3s ease;
+        border-radius: 12px;
+    }
+    .btn-hover-effect:hover:not(.disabled) {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(255, 193, 7, 0.3) !important;
+        background-color: #e5ac00;
+    }
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: ">";
+    }
+</style>
 {% endblock %}

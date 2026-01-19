@@ -1,32 +1,87 @@
 {% extends 'store/base.html' %}
 
 {% block content %}
-<div class="row justify-content-center mt-5">
-    <div class="col-md-4">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white text-center">
-                <h4 class="mb-0">Iniciar Sesión</h4>
+<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-md-5 col-lg-4 animate__animated animate__zoomIn">
+        <div class="card shadow-lg border-0 overflow-hidden" style="border-radius: 20px;">
+            <div class="card-header border-0 py-4 text-center" 
+                 style="background: linear-gradient(135deg, #1a1d20 0%, #343a40 100%);">
+                <h3 class="mb-0 fw-bold text-warning">
+                    <i class="bi bi-person-circle"></i> Iniciar Sesión
+                </h3>
             </div>
-            <div class="card-body p-4">
+            
+            <div class="card-body p-4 p-lg-5 bg-white">
                 <form method="post">
                     {% csrf_token %}
+                    
                     {% for field in form %}
-                        <div class="mb-3">
-                            <label class="form-label">{{ field.label }}</label>
-                            {{ field }}
+                        <div class="mb-4">
+                            <label class="form-label fw-600 text-muted small text-uppercase" style="letter-spacing: 1px;">
+                                {{ field.label }}
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-0"><i class="bi bi-shield-lock"></i></span>
+                                {{ field }}
+                            </div>
+                            
                             {% if field.errors %}
-                                <div class="text-danger small">{{ field.errors }}</div>
+                                <div class="text-danger x-small mt-1 animate__animated animate__shakeX">
+                                    {{ field.errors }}
+                                </div>
                             {% endif %}
                         </div>
                     {% endfor %}
-                    <button type="submit" class="btn btn-primary w-100">Entrar</button>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-dark py-2 fw-bold shadow-sm" style="border-radius: 10px; transition: 0.3s;">
+                            Entrar a I-BEY
+                        </button>
+                    </div>
+                    
                     <input type="hidden" name="next" value="{{ next }}">
                 </form>
             </div>
-            <div class="card-footer text-center bg-white">
-                <p class="mb-0 small">¿No tienes cuenta? <a href="{% url 'registro' %}">Regístrate aquí</a></p>
+            
+            <div class="card-footer bg-light border-0 py-3 text-center">
+                <p class="mb-0 text-muted small">
+                    ¿Eres nuevo por aquí? 
+                    <a href="{% url 'registro' %}" class="text-primary fw-bold text-decoration-none">Crea una cuenta</a>
+                </p>
             </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'lista_productos' %}" class="text-muted text-decoration-none small">
+                <i class="bi bi-arrow-left"></i> Volver a la tienda
+            </a>
         </div>
     </div>
 </div>
+
+<style>
+    /* Estilo para que los inputs de Django se vean como Bootstrap */
+    input[type="text"], input[type="password"], input[type="email"], select {
+        display: block;
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #212529;
+        background-color: #f8f9fa;
+        background-clip: padding-box;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+    input:focus {
+        background-color: #fff;
+        border-color: #ffc107;
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+    }
+    .fw-600 { font-weight: 600; }
+    .x-small { font-size: 0.75rem; }
+</style>
 {% endblock %}
