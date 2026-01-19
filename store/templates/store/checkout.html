@@ -1,0 +1,55 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center animate__animated animate__fadeInUp">
+    <div class="col-md-8 col-lg-6">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="card-header bg-dark text-white p-4 text-center">
+                <h3 class="mb-0 fw-bold"><i class="bi bi-credit-card-2-front me-2"></i> Finalizar Compra</h3>
+            </div>
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <h5 class="text-muted">Total a Pagar</h5>
+                    <h1 class="display-4 fw-bold text-success">${{ total }}</h1>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Nombre en la tarjeta</label>
+                        <input type="text" class="form-control form-control-lg" placeholder="Como aparece en el plástico" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Número de Tarjeta (Simulación)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="bi bi-credit-card"></i></span>
+                            <input type="text" name="tarjeta" class="form-control form-control-lg" placeholder="0000 0000 0000 0000" required>
+                        </div>
+                        <div class="form-text">Puedes ingresar cualquier número ficticio.</div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-6">
+                            <label class="form-label fw-bold">Expiración</label>
+                            <input type="text" class="form-control form-control-lg" placeholder="MM/YY" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-bold">CVV</label>
+                            <input type="text" class="form-control form-control-lg" placeholder="123" required>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-warning btn-lg fw-bold py-3 shadow-sm hover-scale">
+                            Confirmar Pago <i class="bi bi-check-lg"></i>
+                        </button>
+                        <a href="{% url 'ver_carrito' %}" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

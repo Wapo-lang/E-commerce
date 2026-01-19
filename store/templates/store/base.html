@@ -23,7 +23,6 @@
             color: #333;
         }
 
-        /* Navbar con Gradiente y Cristal */
         .navbar {
             background: linear-gradient(135deg, var(--dark-bg) 0%, #343a40 100%);
             backdrop-filter: blur(10px);
@@ -38,31 +37,13 @@
             transition: transform 0.3s ease;
         }
 
-        .navbar-brand:hover {
-            transform: scale(1.05);
-        }
+        .navbar-brand:hover { transform: scale(1.05); }
 
-        /* Buscador estilizado */
-        .search-input {
-            border-radius: 25px 0 0 25px;
-            border: none;
-            padding-left: 1.5rem;
-        }
+        .search-input { border-radius: 25px 0 0 25px; border: none; padding-left: 1.5rem; }
+        .search-btn { border-radius: 0 25px 25px 0; padding-right: 1.5rem; }
 
-        .search-btn {
-            border-radius: 0 25px 25px 0;
-            padding-right: 1.5rem;
-        }
-
-        /* Botones y Links */
-        .nav-link {
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .nav-link:hover {
-            color: var(--accent-color) !important;
-        }
+        .nav-link { font-weight: 500; transition: color 0.3s ease; }
+        .nav-link:hover { color: var(--accent-color) !important; }
 
         .btn-register {
             background-color: var(--accent-color);
@@ -79,18 +60,9 @@
             box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
         }
 
-        /* Animación para el contenido */
-        .content-wrapper {
-            animation: fadeIn 1s ease-in;
-        }
+        .content-wrapper { animation: fadeIn 1s ease-in; }
 
-        /* Estilos para las tarjetas de productos (se aplicarán en lista.html) */
-        .card {
-            border: none;
-            border-radius: 15px;
-            transition: all 0.3s ease;
-        }
-
+        .card { border: none; border-radius: 15px; transition: all 0.3s ease; }
         .card:hover {
             transform: translateY(-10px);
             box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
@@ -116,7 +88,8 @@
 
                 <ul class="navbar-nav ms-auto align-items-center animate__animated animate__fadeInRight">
                     <li class="nav-item me-lg-3">
-                        <a class="nav-link active" href="{% url 'ver_carrito' %}"> <i class="bi bi-cart3 position-relative">
+                        <a class="nav-link active" href="{% url 'ver_carrito' %}"> 
+                            <i class="bi bi-cart3 position-relative">
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
                                     {{ request.session.carrito|length|default:0 }}
                                 </span>
@@ -126,18 +99,38 @@
                     </li>
 
                     {% if user.is_authenticated %}
+                        
+                        {% if user.is_staff or user.is_superuser %}
+                        <li class="nav-item dropdown me-2">
+                            <a class="nav-link dropdown-toggle text-warning fw-bold" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-shield-lock-fill"></i> Staff
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
+                                {% if user.is_superuser %}
+                                    <li><a class="dropdown-item" href="{% url 'crear_empleado' %}"><i class="bi bi-person-plus me-2"></i>Crear Empleado</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                {% endif %}
+                                <li><a class="dropdown-item" href="{% url 'gestionar_stock' %}"><i class="bi bi-box-seam me-2"></i>Inventario</a></li>
+                                <li><a class="dropdown-item" href="{% url 'ver_reportes' %}"><i class="bi bi-graph-up me-2"></i>Finanzas</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-primary" href="/admin/" target="_blank"><i class="bi bi-cpu me-2"></i>Django Admin</a></li>
+                            </ul>
+                        </li>
+                        {% endif %}
+
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-                                <div class="bg-primary rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                <div class="bg-primary rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; font-size: 0.8rem;">
                                     {{ user.username|first|upper }}
                                 </div>
                                 {{ user.username }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
-                                <li><a class="dropdown-item" href="{% url 'password_change' %}"><i class="bi bi-shield-lock me-2"></i>Seguridad</a></li>
+                                <li><a class="dropdown-item" href="{% url 'historial_compras' %}"><i class="bi bi-bag-check me-2"></i>Mis Compras</a></li>
+                                <li><a class="dropdown-item" href="{% url 'password_change' %}"><i class="bi bi-key me-2"></i>Seguridad</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form action="{% url 'logout' %}" method="post" class="px-2">
+                                <li class="px-3">
+                                    <form action="{% url 'logout' %}" method="post">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-sm btn-outline-danger w-100">Cerrar Sesión</button>
                                     </form>
@@ -157,6 +150,17 @@
         </div>
     </nav>
 
+    <div class="container mt-3">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-4 shadow-sm" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
     <div class="container py-4 content-wrapper">
         {% block content %}
         {% endblock %}
@@ -164,7 +168,7 @@
 
     <footer class="bg-dark text-white-50 py-4 mt-5">
         <div class="container text-center">
-            <small>&copy; 2025 I-BEY E-commerce. Todos los derechos reservados.</small>
+            <small>&copy; 2026 I-BEY E-commerce. Todos los derechos reservados.</small>
         </div>
     </footer>
 

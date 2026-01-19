@@ -1,0 +1,59 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div class="container animate__animated animate__fadeIn">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-header bg-primary text-white p-4">
+                    <h3 class="mb-0 fw-bold"><i class="bi bi-person-badge-fill me-2"></i> Alta de Empleado</h3>
+                    <small>Crear usuario y asignar rol administrativo</small>
+                </div>
+                <div class="card-body p-5">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Nombre de Usuario</label>
+                            <input type="text" name="username" class="form-control" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Correo Electrónico</label>
+                            <input type="email" name="email" class="form-control" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Contraseña Temporal</label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Rol (Permisos)</label>
+                            <select name="rol" class="form-select form-select-lg mb-3" aria-label="Seleccionar Rol">
+                                <option selected disabled>Seleccione un grupo...</option>
+                                {% for grupo in grupos %}
+                                    <option value="{{ grupo.name }}">
+                                        {{ grupo.name|title|cut:"_" }} 
+                                        </option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text text-muted">
+                                <i class="bi bi-info-circle"></i> 
+                                <strong>Admin Inventario:</strong> Modifica stock. <br>
+                                <strong>Gestor Finanzas:</strong> Ve reportes y devoluciones.
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold">
+                                Crear Empleado <i class="bi bi-save ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

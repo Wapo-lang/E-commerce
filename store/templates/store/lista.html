@@ -1,49 +1,64 @@
 {% extends 'store/base.html' %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="fw-bold">Explora nuestros productos</h1>
-    <span class="text-muted">{{ productos.count }} artículos encontrados</span>
-</div>
+<div class="container animate__animated animate__fadeIn">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold mb-3">Descubre el <span class="text-warning">Catálogo</span></h1>
+        <p class="lead text-muted">Los mejores productos seleccionados para ti</p>
+    </div>
 
-<div class="row">
-    {% for producto in productos %}
-    <div class="col-md-4 col-lg-3 mb-4">
-        <div class="card h-100 shadow-sm">
-            <div class="position-relative">
-                {% if producto.imagen %}
-                    <img src="{{ producto.imagen }}" class="card-img-top" alt="{{ producto.nombre }}" style="height: 220px; object-fit: cover;">
-                {% else %}
-                    <img src="https://via.placeholder.com/220" class="card-img-top" alt="Sin imagen">
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for producto in productos %}
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0 position-relative overflow-hidden">
+                {% if producto.stock == 0 %}
+                    <span class="position-absolute top-0 end-0 badge bg-danger m-3 py-2 px-3 rounded-pill">Agotado</span>
                 {% endif %}
-                
-                <span class="position-absolute top-0 end-0 bg-dark text-white px-3 py-1 m-2 rounded-pill fw-bold">
-                    ${{ producto.precio }}
-                </span>
-            </div>
-            
-            <div class="card-body">
-                <small class="text-uppercase text-primary fw-bold" style="font-size: 0.7rem;">{{ producto.categoria.nombre }}</small>
-                <h5 class="card-title mt-1">
-                    <a href="{% url 'detalle_producto' producto.id %}" class="text-decoration-none text-dark">{{ producto.nombre }}</a>
-                </h5>
-                <p class="card-text text-muted small">{{ producto.descripcion|truncatewords:10 }}</p>
-            </div>
-            
-            <div class="card-footer bg-white border-0 pb-3">
-                <div class="d-grid">
-                    <a href="{% url 'agregar' producto.id %}" class="btn btn-outline-primary">
-                        <i class="bi bi-cart-plus"></i> Añadir al carrito
+
+                <div class="bg-light text-center overflow-hidden" style="height: 250px;">
+                    <a href="{% url 'detalle_producto' producto.id %}">
+                        <img src="{{ producto.imagen|default:'https://via.placeholder.com/300' }}" 
+                             class="card-img-top h-100 w-100" 
+                             style="object-fit: cover; transition: transform 0.5s ease;"
+                             onmouseover="this.style.transform='scale(1.1)'" 
+                             onmouseout="this.style.transform='scale(1)'">
                     </a>
+                </div>
+
+                <div class="card-body d-flex flex-column p-4">
+                    <div class="mb-2">
+                        <span class="badge bg-primary-subtle text-primary rounded-pill">{{ producto.categoria.nombre }}</span>
+                    </div>
+                    <h5 class="card-title fw-bold mb-3">
+                        <a href="{% url 'detalle_producto' producto.id %}" class="text-decoration-none text-dark stretched-link">
+                            {{ producto.nombre }}
+                        </a>
+                    </h5>
+                    
+                    <div class="mt-auto d-flex justify-content-between align-items-center">
+                        <span class="fs-4 fw-bold text-success">${{ producto.precio }}</span>
+                        
+                        {% if producto.stock > 0 %}
+                        <form action="{% url 'agregar' producto.id %}" method="post" style="z-index: 2; position: relative;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-warning rounded-circle shadow-sm p-2" title="Agregar al carrito">
+                                <i class="bi bi-cart-plus-fill fs-5"></i>
+                            </button>
+                        </form>
+                        {% else %}
+                             <button class="btn btn-secondary rounded-circle p-2 disabled"><i class="bi bi-slash-circle"></i></button>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-search display-1 text-muted"></i>
+            <h3 class="mt-3">No encontramos productos</h3>
+            <p>Intenta con otra búsqueda.</p>
+        </div>
+        {% endfor %}
     </div>
-    {% empty %}
-    <div class="col-12 text-center py-5">
-        <h3 class="text-muted">No encontramos lo que buscas... 🔍</h3>
-        <a href="{% url 'lista_productos' %}" class="btn btn-link">Ver todo el catálogo</a>
-    </div>
-    {% endfor %}
 </div>
 {% endblock %}

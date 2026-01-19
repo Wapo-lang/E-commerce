@@ -1,0 +1,31 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center animate__animated animate__fadeIn">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-lg rounded-4">
+            <div class="card-header bg-danger text-white p-3">
+                <h4 class="mb-0"><i class="bi bi-box-arrow-left"></i> Solicitar Devolución</h4>
+            </div>
+            <div class="card-body p-4">
+                <p class="text-muted">
+                    Estás solicitando la devolución del producto: <br>
+                    <strong class="fs-5 text-dark">{{ detalle.producto.nombre }}</strong>
+                </p>
+                <hr>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Cuéntanos el motivo:</label>
+                        <textarea name="motivo" rows="4" class="form-control" placeholder="Ej: Llegó dañado, no es lo que esperaba..." required></textarea>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger">Confirmar Solicitud</button>
+                        <a href="{% url 'historial_compras' %}" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
