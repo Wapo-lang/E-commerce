@@ -1,56 +1,101 @@
 {% extends 'store/base.html' %}
 
 {% block content %}
-<div class="container animate__animated animate__fadeIn">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card border-0 shadow-lg rounded-4">
-                <div class="card-header bg-primary text-white p-4">
-                    <h3 class="mb-0 fw-bold"><i class="bi bi-person-badge-fill me-2"></i> Alta de Empleado</h3>
-                    <small>Crear usuario y asignar rol administrativo</small>
+<div class="container mt-5 animate__animated animate__fadeIn">
+    <div class="row">
+        <div class="col-md-5 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-dark text-white p-3">
+                    <h5 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i>Nuevo Empleado</h5>
                 </div>
-                <div class="card-body p-5">
+                <div class="card-body p-4">
                     <form method="post">
                         {% csrf_token %}
-                        
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">Nombre de Usuario</label>
-                            <input type="text" name="username" class="form-control" required>
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted">Nombre de Usuario</label>
+                            <input type="text" name="username" class="form-control shadow-none" placeholder="ej: jdoe" required>
                         </div>
-
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">Correo Electrónico</label>
-                            <input type="email" name="email" class="form-control" required>
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted">Correo Electrónico</label>
+                            <input type="email" name="email" class="form-control shadow-none" placeholder="juan@empresa.com" required>
                         </div>
-
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">Contraseña Temporal</label>
-                            <input type="password" name="password" class="form-control" required>
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted">Contraseña Temporal</label>
+                            <input type="password" name="password" class="form-control shadow-none" required>
                         </div>
-
                         <div class="mb-4">
-                            <label class="form-label fw-bold">Rol (Permisos)</label>
-                            <select name="rol" class="form-select form-select-lg mb-3" aria-label="Seleccionar Rol">
-                                <option selected disabled>Seleccione un grupo...</option>
+                            <label class="small fw-bold text-muted">Rol Asignado</label>
+                            <select name="rol" class="form-select shadow-none" required>
+                                <option value="" selected disabled>Elegir rol...</option>
                                 {% for grupo in grupos %}
                                     <option value="{{ grupo.name }}">
-                                        {{ grupo.name|title|cut:"_" }} 
-                                        </option>
+                                        {{ grupo.name|title|cut:"_" }}
+                                    </option>
                                 {% endfor %}
                             </select>
-                            <div class="form-text text-muted">
-                                <i class="bi bi-info-circle"></i> 
-                                <strong>Admin Inventario:</strong> Modifica stock. <br>
-                                <strong>Gestor Finanzas:</strong> Ve reportes y devoluciones.
-                            </div>
                         </div>
-
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg fw-bold">
-                                Crear Empleado <i class="bi bi-save ms-2"></i>
-                            </button>
-                        </div>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">
+                            Registrar Empleado
+                        </button>
                     </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-white border-bottom p-3">
+                    <h5 class="mb-0 fw-bold text-dark">Personal con Acceso</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0 table-hover">
+                            <thead class="bg-light">
+                                <tr class="small text-uppercase text-muted">
+                                    <th class="ps-4">Empleado</th>
+                                    <th>Rol / Grupo</th>
+                                    <th class="text-center">Acceso</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for usuario in users_staff %}
+                                <tr>
+                                    <td class="ps-4 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3" style="width: 38px; height: 38px; font-size: 0.9rem;">
+                                                {{ usuario.username|slice:":2"|upper }}
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-dark">{{ usuario.username }}</div>
+                                                <div class="small text-muted" style="font-size: 0.75rem;">{{ usuario.email }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% for g in usuario.groups.all %}
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill fw-normal px-3">
+                                                {{ g.name|cut:"_" }}
+                                            </span>
+                                        {% empty %}
+                                            <span class="text-muted small">Sin rol</span>
+                                        {% endfor %}
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="text-success" title="Acceso habilitado">
+                                            <i class="bi bi-patch-check-fill fs-5"></i>
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center py-5">
+                                        <p class="text-muted mb-0">No hay empleados registrados en el sistema.</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

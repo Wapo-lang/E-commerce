@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from decimal import Decimal
 
 # --- Tus modelos existentes (ligeramente mejorados) ---
 class Categoria(models.Model):
@@ -15,19 +16,19 @@ class Producto(models.Model):
     stock = models.PositiveIntegerField(default=0)
     imagen = models.CharField(max_length=500, null=True, blank=True)
     creado = models.DateTimeField(auto_now_add=True)
-    # Nuevo campo para descuento directo
     descuento_porcentaje = models.IntegerField(default=0, help_text="0 a 100")
 
-    def __str__(self): return self.nombre
+    def __str__(self): 
+        return self.nombre
 
     @property
     def precio_final(self):
-        # Calcula el precio con descuento
+        """Calcula el precio aplicando el descuento de forma segura."""
         if self.descuento_porcentaje > 0:
-            return self.precio * (1 - self.descuento_porcentaje / 100)
+            # Convertimos el cálculo del porcentaje a Decimal para que sea compatible con el campo precio
+            descuento = Decimal(self.descuento_porcentaje) / Decimal(100)
+            return self.precio * (Decimal(1) - descuento)
         return self.precio
-
-# --- NUEVOS MODELOS PARA EL E-COMMERCE ---
 
 class Orden(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ordenes')
@@ -47,7 +48,18 @@ class DetalleOrden(models.Model):
     devuelto = models.BooleanField(default=False)
 
 class Devolucion(models.Model):
-    detalle = models.OneToOneField(DetalleOrden, on_delete=models.CASCADE)
+    # Relación uno a uno: cada detalle de orden solo puede tener una solicitud
+    detalle = models.OneToOneField(
+        'DetalleOrden', 
+        on_delete=models.CASCADE, 
+        related_name='devolucion'
+    )
     fecha = models.DateTimeField(auto_now_add=True)
     motivo = models.TextField()
     aprobada = models.BooleanField(default=False)
+    motivo_rechazo = models.TextField(blank=True, null=True, help_text="Razón por la cual se rechazó la devolución")
+
+    def __str__(self):
+        estado = "Aprobada" if self.aprobada else "Pendiente"
+        return f"Devolución de {self.detalle.producto.nombre} - {estado}"
+    

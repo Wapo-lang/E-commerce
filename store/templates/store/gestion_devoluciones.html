@@ -1,0 +1,87 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 fw-bold">Gestión de Devoluciones</h2>
+    
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="bg-light text-muted small text-uppercase">
+                    <tr>
+                        <th class="ps-4">Producto</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dev in devoluciones %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="fw-bold">{{ dev.detalle.producto.nombre }}</div>
+                            <small class="text-muted">Orden #{{ dev.detalle.orden.id }}</small>
+                        </td>
+                        <td>
+                            {% if dev.aprobada %}
+                                <span class="badge bg-success-subtle text-success rounded-pill px-3">Aprobada</span>
+                            {% elif dev.motivo_rechazo %}
+                                <span class="badge bg-danger-subtle text-danger rounded-pill px-3">Rechazada</span>
+                            {% else %}
+                                <span class="badge bg-warning-subtle text-warning rounded-pill px-3">Pendiente</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if not dev.aprobada and not dev.motivo_rechazo %}
+                                <div class="d-flex justify-content-center gap-2">
+                                    <form action="{% url 'gestionar_devoluciones' %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="dev_id" value="{{ dev.id }}">
+                                        <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">Aprobar</button>
+                                    </form>
+
+                                    <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3" 
+                                            data-bs-toggle="modal" data-bs-target="#modalRechazo{{ dev.id }}">
+                                        Rechazar
+                                    </button>
+                                </div>
+                            {% else %}
+                                <span class="text-muted small">Finalizado</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3" class="text-center py-5">No hay solicitudes pendientes.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% for dev in devoluciones %}
+    {% if not dev.aprobada and not dev.motivo_rechazo %}
+    <div class="modal fade" id="modalRechazo{{ dev.id }}" tabindex="-1" aria-labelledby="modalLabel{{ dev.id }}" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <form action="{% url 'rechazar_devolucion' dev.id %}" method="post">
+                    {% csrf_token %}
+                    <div class="modal-header bg-white border-0 pt-4 px-4">
+                        <h5 class="modal-title fw-bold" id="modalLabel{{ dev.id }}">Rechazar Solicitud #{{ dev.id }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body px-4">
+                        <p class="text-muted">Por favor, indica el motivo del rechazo para <strong>{{ dev.detalle.producto.nombre }}</strong>:</p>
+                        <textarea name="motivo_rechazo" class="form-control bg-light border-0 shadow-none" rows="4" required placeholder="Ej: El producto presenta daños por mal uso..."></textarea>
+                    </div>
+                    <div class="modal-footer border-0 pb-4 px-4">
+                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger rounded-pill px-4 fw-bold">Confirmar Rechazo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endfor %}
+
+{% endblock %}

@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
     # --- Tienda Pública ---
     path('', views.lista_productos, name='lista_productos'),
+    path('categoria/<int:categoria_id>/', views.ver_categoria, name='ver_categoria'),
     path('producto/<int:id>/', views.detalle_producto, name='detalle_producto'),
     
     # --- Carrito (Lógica) ---
@@ -18,11 +19,15 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('mis-compras/', views.historial_compras, name='historial_compras'),
     path('devolucion/<int:detalle_id>/', views.solicitar_devolucion, name='solicitar_devolucion'),
+    path('staff/devoluciones/', views.gestionar_devoluciones, name='gestionar_devoluciones'),
 
     # --- Gestión Interna (Staff/Admin) (NUEVO) ---
     path('staff/crear-empleado/', views.crear_empleado, name='crear_empleado'),
     path('staff/stock/', views.gestionar_stock, name='gestionar_stock'),
     path('staff/reportes/', views.ver_reportes, name='ver_reportes'),
+    path('staff/descuentos/', views.gestionar_descuentos, name='gestionar_descuentos'),
+    # Devoluciones
+    path('devolucion/rechazar/<int:devolucion_id>/', views.rechazar_devolucion, name='rechazar_devolucion'),
 
     # --- Autenticación ---
     path('registro/', views.registro, name='registro'),

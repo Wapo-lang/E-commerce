@@ -48,9 +48,9 @@
                                         </a>
                                     </div>
                                 </td>
-                                <td class="text-end text-muted">${{ item.precio }}</td>
+                                <td class="text-end text-muted">${{ item.precio|floatformat:2 }}</td>
                                 <td class="text-end fw-bold text-primary">
-                                    ${{ item.total }}
+                                    ${{ item.total|floatformat:2 }}
                                 </td>
                                 <td class="text-end">
                                     <a href="{% url 'eliminar' id %}" class="btn btn-outline-danger btn-sm border-0">
@@ -73,7 +73,7 @@
                 <h4 class="fw-bold mb-4 text-warning">Resumen de Compra</h4>
                 <div class="d-flex justify-content-between mb-3">
                     <span class="text-white-50">Subtotal</span>
-                    <span>${{ total }}</span>
+                    <span>${{ total|floatformat:2 }}</span>
                 </div>
                 <div class="d-flex justify-content-between mb-3">
                     <span class="text-white-50">Envío</span>
@@ -82,13 +82,16 @@
                 <hr class="text-white-50">
                 <div class="d-flex justify-content-between mb-4">
                     <span class="fs-5 fw-bold">Total</span>
-                    <span class="fs-4 fw-bold text-warning">${{ total }}</span>
+                    <span class="fs-4 fw-bold text-warning">${{ total|floatformat:2 }}</span>
                 </div>
                 
                 {% if user.is_authenticated %}
-                    <button class="btn btn-warning btn-lg w-100 fw-bold py-3 shadow border-0">
-                        Pagar Ahora <i class="bi bi-credit-card ms-2"></i>
-                    </button>
+                    <form action="{% url 'checkout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-warning btn-lg w-100 fw-bold py-3 shadow border-0">
+                            Pagar Ahora <i class="bi bi-credit-card ms-2"></i>
+                        </button>
+                    </form>
                 {% else %}
                     <div class="alert alert-light border-0 small py-2 mb-3 bg-opacity-10 text-white">
                         <i class="bi bi-info-circle me-1"></i> Debes <a href="{% url 'login' %}" class="fw-bold text-warning">iniciar sesión</a> para comprar.

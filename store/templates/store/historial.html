@@ -21,20 +21,42 @@
                         <tbody>
                             {% for detalle in orden.detalles.all %}
                             <tr>
-                                <td class="ps-4">
+                                <td class="ps-4 align-middle">
                                     <strong>{{ detalle.producto.nombre }}</strong> <br>
                                     <small class="text-muted">${{ detalle.precio_unitario }} x {{ detalle.cantidad }}</small>
                                 </td>
                                 <td class="text-end pe-4 align-middle">
-                                    {% if detalle.devuelto %}
-                                        <span class="badge bg-danger-subtle text-danger border border-danger">
-                                            <i class="bi bi-arrow-return-left"></i> Devuelto
-                                        </span>
+                                    
+                                    {% if detalle.devolucion %}
+                                        {# Si existe una devolución, verificamos el estado #}
+                                        
+                                        {% if detalle.devolucion.estado == 'Aprobada' %}
+                                            <span class="badge bg-success-subtle text-success border border-success rounded-pill px-3 py-2">
+                                                <i class="bi bi-check-circle-fill me-1"></i> Devolución Aceptada
+                                            </span>
+
+                                        {% elif detalle.devolucion.estado == 'Rechazada' %}
+                                            <div class="text-start d-inline-block" style="max-width: 300px;">
+                                                <span class="badge bg-danger-subtle text-danger border border-danger rounded-pill px-3 py-2 mb-2">
+                                                    <i class="bi bi-x-circle-fill me-1"></i> Solicitud Rechazada
+                                                </span>
+                                                <div class="alert alert-danger p-2 mb-0 small lh-sm">
+                                                    <strong>Razón:</strong> {{ detalle.devolucion.motivo_rechazo }}
+                                                </div>
+                                            </div>
+
+                                        {% else %}
+                                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning rounded-pill px-3 py-2">
+                                                <i class="bi bi-hourglass-split me-1"></i> Solicitud en Revisión
+                                            </span>
+                                        {% endif %}
+
                                     {% else %}
-                                        <a href="{% url 'solicitar_devolucion' detalle.id %}" class="btn btn-sm btn-outline-secondary">
+                                        <a href="{% url 'solicitar_devolucion' detalle.id %}" class="btn btn-sm btn-outline-secondary rounded-pill px-3 transition-btn">
                                             Solicitar Devolución
                                         </a>
                                     {% endif %}
+
                                 </td>
                             </tr>
                             {% endfor %}
@@ -45,7 +67,11 @@
         </div>
         {% endfor %}
     {% else %}
-        <div class="alert alert-info">Aún no has realizado ninguna compra.</div>
+        <div class="text-center py-5">
+            <i class="bi bi-bag-x display-1 text-muted"></i>
+            <h3 class="mt-3 text-muted">Aún no has realizado ninguna compra.</h3>
+            <a href="{% url 'lista_productos' %}" class="btn btn-primary mt-3">Ir a la tienda</a>
+        </div>
     {% endif %}
 </div>
 {% endblock %}
