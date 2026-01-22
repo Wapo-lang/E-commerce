@@ -10,7 +10,6 @@ from store.models import Producto, Categoria
 
 
 def generar_catalogo():
-    """Devuelve un diccionario con categorías y productos para poblar la BD."""
     return {
         "Smartphones": [
             {"nombre": "iPhone 15 Pro", "precio": 1200.50, "img": "https://images.unsplash.com/photo-1695048132832-b41495f12eb4?q=80&w=1170&auto=format&fit=crop"},
@@ -66,7 +65,7 @@ def generar_catalogo():
 
         "Accesorios Gaming": [
             {"nombre": "Gamepad inalámbrico Pro ThunderRobot", "precio": 59, "img": "https://nomadaware.com.ec/wp-content/uploads/NomadaWare_gamepad_Thunderobot_G40_Dual_Shock-500x500.webp"},
-            {"nombre": "Auriculares Gaming con micrófono", "precio": 89, "img": "https://images.unsplash.com/photo-1545727210-2f6d3f4a9f3b?q=80&w=1170&auto=format&fit=crop"},
+            {"nombre": "Auriculares Gaming con micrófono", "precio": 89, "img": "https://i5.walmartimages.com/asr/6e0b666e-3434-4f9b-95b9-bc9f86153ee1.bf363f5de6cf9ed9fb7b6a6ce84ec64d.jpeg"},
             {"nombre": "Silla COOLER MASTER CALIBER E1", "precio": 199, "img": "https://nomadaware.com.ec/wp-content/uploads/NomadaWare_silla_cooler_master_caliber_e1_purple-500x500.webp"},
         ],
 

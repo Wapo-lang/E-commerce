@@ -134,12 +134,18 @@
                                     <li><hr class="dropdown-divider"></li>
                                 {% endif %}
 
-                                <li><a class="dropdown-item text-danger fw-bold" href="{% url 'gestionar_descuentos' %}"><i class="bi bi-percent me-2"></i>Gestionar Descuentos</a></li>
-                                <li><a class="dropdown-item" href="{% url 'gestionar_stock' %}"><i class="bi bi-box-seam me-2"></i>Inventario</a></li>
-                                <li><a class="dropdown-item" href="{% url 'ver_reportes' %}"><i class="bi bi-graph-up me-2"></i>Finanzas</a></li>
+                                <li>
+                                    <a class="dropdown-item fw-bold text-primary" href="{% url 'editar_iva' %}">
+                                        <i class="bi bi-percent me-2"></i>Configurar IVA
+                                    </a>
+                                </li>
+                                <li><a class="dropdown-item" href="{% url 'ver_reportes' %}"><i class="bi bi-graph-up me-2"></i>Reportes Finanzas</a></li>
+                                <li><hr class="dropdown-divider"></li>
+
+                                <li><a class="dropdown-item text-danger fw-bold" href="{% url 'gestionar_descuentos' %}"><i class="bi bi-tag me-2"></i>Gestionar Descuentos</a></li>
+                                <li><a class="dropdown-item" href="{% url 'gestionar_stock' %}"><i class="bi bi-box-seam me-2"></i>Inventario / Stock</a></li>
                                 <li><a class="dropdown-item" href="{% url 'gestionar_devoluciones' %}"><i class="bi bi-arrow-return-left me-2"></i>Devoluciones</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-primary" href="/admin/" target="_blank"><i class="bi bi-cpu me-2"></i>Django Admin</a></li>
                             </ul>
                         </li>
                         {% endif %}
@@ -179,9 +185,14 @@
     <div class="container mt-3">
         {% if messages %}
             {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-4 shadow-sm" role="alert">
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-4 shadow-sm animate__animated animate__fadeInDown" role="alert">
+                    {% if message.tags == 'error' or message.tags == 'warning' %}
+                        <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                    {% else %}
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                    {% endif %}
                     {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-close="alert" aria-label="Close"></button>
                 </div>
             {% endfor %}
         {% endif %}

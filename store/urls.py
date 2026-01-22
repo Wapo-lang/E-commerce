@@ -28,6 +28,7 @@ urlpatterns = [
     path('staff/descuentos/', views.gestionar_descuentos, name='gestionar_descuentos'),
     # Devoluciones
     path('devolucion/rechazar/<int:devolucion_id>/', views.rechazar_devolucion, name='rechazar_devolucion'),
+    path('staff/configuracion-iva/', views.editar_iva, name='editar_iva'),
 
     # --- Autenticación ---
     path('registro/', views.registro, name='registro'),

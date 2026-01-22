@@ -3,20 +3,28 @@ from django.contrib.auth.decorators import user_passes_test, login_required
 from django.contrib import messages
 from django.db import transaction # Vital para transacciones seguras
 from django.contrib.auth.models import Group, User
-from .models import Categoria, Producto, Orden, DetalleOrden, Devolucion
+from .models import Categoria, Producto, Orden, DetalleOrden, Devolucion, Configuracion
 from .carrito import Carrito
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 
 def es_admin_inventario(user): 
-    return user.is_authenticated and (user.groups.filter(name='Admin_Inventario').exists() or user.is_superuser)
+    return user.is_authenticated and (
+        user.groups.filter(name='Admin_Inventario').exists() or
+        user.is_superuser)
 
 def es_gestor_descuentos(user): 
-    return user.is_authenticated and (user.groups.filter(name='Gestor_Descuentos').exists() or user.is_superuser)
+    return user.is_authenticated and (
+        user.groups.filter(name='Gestor_Descuentos').exists() or
+        user.is_superuser)
 
 def es_gestor_finanzas(user): 
-    return user.is_authenticated and (user.groups.filter(name='Gestor_Finanzas').exists() or user.is_superuser)
+    return user.is_authenticated and (
+        user.groups.filter(name='Gestor_Finanzas').exists() or 
+        user.groups.filter(name='Gerencia').exists() or  # <--- Agregamos Gerencia
+        user.is_superuser
+    )
 
 @user_passes_test(lambda u: u.is_superuser)
 def crear_empleado(request):
@@ -45,7 +53,7 @@ def crear_empleado(request):
     
     context = {
         'grupos': grupos,
-        'users_staff': empleados # Este nombre debe coincidir con el del HTML
+        'users_staff': empleados
     }
     return render(request, 'store/admin_empleados.html', context)
 
@@ -63,7 +71,7 @@ def checkout(request):
                 # Calculamos el total
                 total = sum(float(item['total']) for item in carrito_obj.carrito.values())
                 
-                # 1. Crear Orden inmediatamente
+                # 1. Crear Orden 
                 orden = Orden.objects.create(
                     usuario=request.user,
                     total=total,
@@ -167,7 +175,7 @@ def lista_productos(request):
     busqueda = request.GET.get('buscar')
     
     if busqueda:
-        # 1. Caso Búsqueda: Filtramos productos por nombre
+        # 1. Filtro de Productos por búsqueda
         productos = Producto.objects.filter(nombre__icontains=busqueda)
         return render(request, 'store/lista.html', {
             'productos': productos, 
@@ -175,8 +183,7 @@ def lista_productos(request):
             'query': busqueda
         })
     
-    # 2. Caso Catálogo: Agrupamos por categorías para la página principal
-    # Usamos prefetch_related para que la carga sea ultra rápida
+    # 2. Agrupamos por categorías para la página principal
     categorias = Categoria.objects.all().prefetch_related('productos')
     
     return render(request, 'store/lista.html', {
@@ -199,7 +206,6 @@ def ver_carrito(request):
         'total': total
     })
 
-# ... El resto de tus funciones (agregar, eliminar, restar, limpiar) están bien ...
 def agregar_producto(request, id):
     carrito = Carrito(request)
     producto = get_object_or_404(Producto, id=id)
@@ -289,12 +295,12 @@ def ver_categoria(request, categoria_id):
     return render(request, 'store/lista.html', {
         'productos': productos,
         'es_busqueda': True, 
-        'query': categoria_seleccionada.nombre # Esto hará que el título diga: Resultados para: "Smartphones"
+        'query': categoria_seleccionada.nombre 
     })
 
 @login_required
 def rechazar_devolucion(request, devolucion_id):
-    # Verificación de autoridad
+    # Verificación
     if not (request.user.is_superuser or es_gestor_finanzas(request.user)):
         messages.error(request, "No tienes permiso para rechazar devoluciones.")
         return redirect('lista_productos')
@@ -308,7 +314,6 @@ def rechazar_devolucion(request, devolucion_id):
             return redirect('gestionar_devoluciones')
 
         devolucion.aprobada = False
-        # Asegúrate de que tu modelo tenga 'estado' y 'motivo_rechazo'
         devolucion.motivo_rechazo = motivo
         if hasattr(devolucion, 'estado'):
             devolucion.estado = 'Rechazada'
@@ -317,3 +322,25 @@ def rechazar_devolucion(request, devolucion_id):
         messages.warning(request, f"Solicitud #{devolucion.id} rechazada.")
         
     return redirect('gestionar_devoluciones')
+
+@login_required
+def editar_iva(request):
+    if not es_gestor_finanzas(request.user):
+        messages.error(request, "Acceso denegado: Solo Finanzas puede cambiar el IVA.")
+        return redirect('lista_productos')
+
+    config = Configuracion.get_solo()
+
+    if request.method == 'POST':
+        nuevo_iva = request.POST.get('iva')
+        try:
+            config.iva_porcentaje = float(nuevo_iva)
+            config.save()
+            messages.success(request, f"IVA actualizado correctamente al {nuevo_iva}%")
+        except ValueError:
+            messages.error(request, "Por favor ingrese un número válido.")
+            
+        return redirect('editar_iva')
+
+    return render(request, 'store/admin_iva.html', {'config': config})
+

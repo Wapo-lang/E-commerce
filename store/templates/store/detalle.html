@@ -34,14 +34,14 @@
             
             <h1 class="display-5 fw-bold mb-3">{{ producto.nombre }}</h1>
             
-            <div class="d-flex align-items-center mb-4">
+            <div class="d-flex align-items-center mb-2">
                 {% if producto.descuento_porcentaje > 0 %}
                     <div class="me-3">
                         <span class="text-muted text-decoration-line-through fs-5">
                             ${{ producto.precio|floatformat:2 }}
                         </span>
                         <h2 class="text-danger fw-bold mb-0 fs-1">
-                            ${{ producto.precio_final|floatformat:2 }}
+                            ${{ producto.precio_venta|floatformat:2 }}
                         </h2>
                     </div>
                     <span class="badge bg-danger rounded-pill px-3 py-2 animate__animated animate__pulse animate__infinite">
@@ -49,7 +49,7 @@
                     </span>
                 {% else %}
                     <h2 class="text-success fw-bold mb-0 me-3 fs-1">
-                        ${{ producto.precio|floatformat:2 }}
+                        ${{ producto.precio_venta|floatformat:2 }}
                     </h2>
                 {% endif %}
                 
@@ -64,6 +64,12 @@
                 {% endif %}
             </div>
 
+            <div class="mb-4">
+                <small class="text-muted">
+                    <i class="bi bi-calculator me-1"></i> 
+                    Precio base: ${{ producto.precio_con_descuento|floatformat:2 }} + {{ producto.iva_actual }}% IVA
+                </small>
+            </div>
             <hr class="text-muted opacity-25">
 
             <p class="text-muted fs-5 mb-5">
@@ -108,7 +114,7 @@
     .btn-hover-effect {
         transition: all 0.3s ease;
         border-radius: 15px;
-        background-color: #0d6efd; /* Color primario más profesional */
+        background-color: #0d6efd; 
         border: none;
     }
     .btn-hover-effect:hover:not(.disabled) {

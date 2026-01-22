@@ -1,0 +1,80 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div class="container mt-5 animate__animated animate__fadeIn">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-dark text-warning text-center py-4 border-bottom border-warning">
+                    <h3 class="fw-bold mb-0"><i class="bi bi-bank me-2"></i>Gestión de IVA</h3>
+                    <small class="text-white-50">Configuración Fiscal del Sistema</small>
+                </div>
+                
+                <div class="card-body p-4 p-lg-5 bg-white">
+                    <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center mb-4" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill fs-4 me-3 text-danger"></i>
+                        <div style="font-size: 0.9rem;">
+                            <strong>¡Atención!</strong> Modificar este valor cambiará el precio final de venta de <strong>todos</strong> los productos de la tienda inmediatamente.
+                        </div>
+                    </div>
+
+                    <form method="POST" action="{% url 'editar_iva' %}">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4 text-center">
+                            <label for="iva" class="form-label fw-bold text-muted mb-3 text-uppercase" style="letter-spacing: 1px;">
+                                Porcentaje de IVA Actual
+                            </label>
+                            <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden border">
+                                <span class="input-group-text bg-light border-0 px-4">
+                                    <i class="bi bi-percent text-primary"></i>
+                                </span>
+                                <input type="number" 
+                                       step="0.01" 
+                                       name="iva" 
+                                       id="iva" 
+                                       class="form-control border-0 text-center fw-bold text-primary" 
+                                       value="{{ config.iva_porcentaje|stringformat:'.2f' }}"
+                                       required>
+                                <button class="btn btn-primary px-4 fw-bold" type="submit">
+                                    Actualizar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <a href="{% url 'lista_productos' %}" class="text-decoration-none text-muted small">
+                                <i class="bi bi-arrow-left"></i> Cancelar y volver
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="card-footer bg-light py-3 border-0">
+                    <div class="row text-center text-muted" style="font-size: 0.75rem;">
+                        <div class="col">
+                            <strong>Usuario:</strong> {{ user.username }}
+                        </div>
+                        <div class="col border-start">
+                            <strong>Rol:</strong> 
+                            {% if user.is_superuser %}Admin{% else %}Finanzas/Gerencia{% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .input-group:focus-within {
+        border-color: var(--primary-color) !important;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+    }
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+        -webkit-appearance: none; 
+        margin: 0; 
+    }
+</style>
+{% endblock %}

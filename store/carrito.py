@@ -17,16 +17,18 @@ class Carrito:
             cantidad_actual_en_carrito = self.carrito[id]["cantidad"]
             
         if cantidad_actual_en_carrito + 1 > producto.stock:
-            return False # Indicamos que falló por falta de stock
+            return False 
 
         if id not in self.carrito.keys():
             self.carrito[id] = {
                 "producto_id": producto.id,
                 "nombre": producto.nombre,
-                # Usamos float para serializar JSON, pero calcularemos con Decimal en views
-                "precio": str(float(producto.precio_final)), 
+                # --- AQUÍ ESTÁ EL CAMBIO ---
+                # Usamos precio_venta (que ya incluye el IVA del modelo)
+                "precio": str(float(producto.precio_venta)), 
                 "cantidad": 1,
-                "total": str(float(producto.precio_final)),
+                "total": str(float(producto.precio_venta)),
+                # ---------------------------
                 "imagen": producto.imagen if producto.imagen else "",
             }
         else:
@@ -35,9 +37,8 @@ class Carrito:
             self.carrito[id]["total"] = str(precio * self.carrito[id]["cantidad"])
             
         self.guardar_carrito()
-        return True # Éxito
+        return True 
 
-    # ... Tus métodos guardar_carrito, eliminar, restar y limpiar se quedan IGUAL ...
     def guardar_carrito(self):
         self.session["carrito"] = self.carrito
         self.session.modified = True
@@ -57,6 +58,6 @@ class Carrito:
                 self.eliminar(producto)
             self.guardar_carrito()
             
-    def limpiar(self): # Agrega este método explícito
+    def limpiar(self): 
         self.session["carrito"] = {}
         self.session.modified = True
